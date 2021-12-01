@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 from sklearn.model_selection import learning_curve
 import numpy as np
 import pandas as pd
+import seaborn as sns
 
 """Tools for general machine learning projects.
 """
@@ -57,6 +58,25 @@ def plot_learning_curves(
     plt.xlabel("Training set size", fontsize=14)
     plt.title("Learning curves", fontsize=18, y=1.03)
     plt.legend()
+
+
+def plot_for_scaling(df, feature, figsize=(7, 3)):
+    """Plot the distribution and the boxplot of a given column from a DataFrame.
+
+    Args:
+        df (pd.DataFrame): The DataFrame from which you want to plot \
+                           the distribution and boxplot.
+        feature (str): The name of the column
+        figsize (tuple, optional): Defaults to (7, 3).
+    """
+    fig = plt.figure(constrained_layout=True, figsize=figsize)
+    gs = fig.add_gridspec(1, 4)
+    ax = fig.add_subplot(gs[0, 0:3])
+    sns.histplot(data=df, x=feature, kde=True, ax=ax)
+    ax1 = fig.add_subplot(gs[0, 3:])
+    sns.boxplot(data=df, y=feature, ax=ax1)
+    sns.despine()
+    plt.show()
 
 
 def reduce_memory_usage(df):
