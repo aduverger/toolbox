@@ -7,9 +7,46 @@ import pandas as pd
 """
 
 
-def plot_learning_curves(model, X, y, figsize=(9, 4), scoring=None):
+def plot_learning_curves(
+    estimator,
+    X,
+    y,
+    figsize=(9, 4),
+    train_sizes=np.array([0.1, 0.33, 0.55, 0.78, 1.0]),
+    cv=None,
+    scoring=None,
+):
+    """Plot the learning curves for a given sklearn estimator.
+
+    Args
+    ----------
+    estimator : object type that implements the “fit” and “predict” method
+        An object of that type which is cloned for each validation.
+    X : array-like of shape (n_samples, n_features)
+        Training vector, where `n_samples` is the number of samples and 
+        `n_features` is the number of features.
+    y : array-like of shape (n_samples,) or (n_samples, n_outputs)
+        Target relative to X for classification or regression;
+        None for unsupervised learning.
+    train_sizes : array-like of shape (n_ticks,), \
+        default=np.linspace(0.1, 1.0, 5)
+        Relative or absolute numbers of training examples that will be used to
+        generate the learning curve.
+    cv : int, cross-validation generator or an iterable, default=None
+        Determines the cross-validation splitting strategy.
+        Possible inputs for cv are:
+        - None, to use the default 5-fold cross validation,
+        - int, to specify the number of folds in a `(Stratified)KFold`,
+        - :term:`CV splitter`,
+        - An iterable yielding (train, test) splits as arrays of indices.
+    scoring : str or callable, default=None
+        A str or a scorer callable object / function with signature
+        ``scorer(estimator, X, y)``.
+    figsize : tuple
+        The figsize of the plot, default=(9, 4).
+    """
     train_sizes, train_scores, test_scores = learning_curve(
-        model, X, y, scoring=scoring
+        estimator, X, y, train_sizes=train_sizes, cv=cv, scoring=scoring
     )
     train_scores_mean = np.mean(train_scores, axis=1)
     test_scores_mean = np.mean(test_scores, axis=1)
