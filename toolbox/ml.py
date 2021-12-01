@@ -79,6 +79,25 @@ def plot_for_scaling(df, feature, figsize=(7, 3)):
     plt.show()
 
 
+def investigate_corr(df):
+    """Plot a heatmap of the collinearity between columns of a DataFrame.
+    Also return a DataFrame with the sorted collinearity.
+    """
+    corr = df.corr()
+    corr_df = corr.unstack().reset_index()  # Unstack correlation matrix
+    corr_df.columns = ["feature_1", "feature_2", "correlation"]  # rename columns
+    corr_df.sort_values(
+        by="correlation", ascending=False, inplace=True
+    )  # sort by correlation
+    corr_df = corr_df[
+        corr_df["feature_1"] != corr_df["feature_2"]
+    ]  # Remove self correlation
+
+    sns.heatmap(corr, xticklabels=corr.columns, yticklabels=corr.columns, cmap="YlGnBu")
+
+    return corr_df
+
+
 def reduce_memory_usage(df):
     """Reduce the memory usage of a DataFrame by downcasting all of its numeric columns.
 
