@@ -1,15 +1,25 @@
-from nltk.corpus import stopwords 
+from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
 from unidecode import unidecode
 import string
 import re
 
-def cleaning(text: str,
-            emails=False, punctuation=False, 
-            low_case=False, numbers=False,
-            stop_words=False, language='english',
-            accents=False, lemma=False):
+"""Tools for general NLP projects.
+"""
+
+
+def cleaning(
+    text: str,
+    emails=False,
+    punctuation=False,
+    low_case=False,
+    numbers=False,
+    stop_words=False,
+    language="english",
+    accents=False,
+    lemma=False,
+):
     """Clean a text according to desired cleaning methods
 
     Args:
@@ -27,44 +37,58 @@ def cleaning(text: str,
         cleaned_text (str): The cleaned text
     """
     cleaned_text = text
-    if emails: cleaned_text = remove_emails(cleaned_text)
-    if punctuation: cleaned_text = remove_punctuation(cleaned_text)
-    if low_case: cleaned_text = lower_case(cleaned_text)
-    if numbers: cleaned_text = remove_numbers(cleaned_text)
-    if stop_words: cleaned_text = remove_stop_words(cleaned_text, language)
-    if accents: cleaned_text = remove_accents(cleaned_text)
-    if lemma: cleaned_text = lemmatize(cleaned_text)
+    if emails:
+        cleaned_text = remove_emails(cleaned_text)
+    if punctuation:
+        cleaned_text = remove_punctuation(cleaned_text)
+    if low_case:
+        cleaned_text = lower_case(cleaned_text)
+    if numbers:
+        cleaned_text = remove_numbers(cleaned_text)
+    if stop_words:
+        cleaned_text = remove_stop_words(cleaned_text, language)
+    if accents:
+        cleaned_text = remove_accents(cleaned_text)
+    if lemma:
+        cleaned_text = lemmatize(cleaned_text)
     return cleaned_text
+
 
 def remove_emails(text: str):
     """Return text without emails"""
-    regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
-    return re.sub(regex, '', text)
+    regex = r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b"
+    return re.sub(regex, "", text)
+
 
 def remove_punctuation(text: str):
     """Return text without punctuation"""
-    return ''.join(element for element in text if element not in string.punctuation)
+    return "".join(element for element in text if element not in string.punctuation)
+
 
 def lower_case(text: str):
     """Return text without upper cases"""
     return text.lower()
 
+
 def remove_numbers(text: str):
     """Return text without numbers"""
-    return ''.join(element for element in text if not element.isdigit())
+    return "".join(element for element in text if not element.isdigit())
 
-def remove_stop_words(text: str, language:str):
+
+def remove_stop_words(text: str, language: str):
     """Return text without stop words from the language"""
     stop_words = set(stopwords.words(language))
     word_tokens = word_tokenize(text)
-    return ' '.join(word for word in word_tokens if word not in stop_words)
+    return " ".join(word for word in word_tokens if word not in stop_words)
+
 
 def remove_accents(text: str):
-    """ Return text without accents"""
+    """Return text without accents"""
     return unidecode(text)
+
 
 def lemmatize(text: str):
     """Return text with only roots of the words"""
     word_tokens = word_tokenize(text)
     lemmatizer = WordNetLemmatizer()
-    return ' '.join(lemmatizer.lemmatize(word) for word in word_tokens)
+    return " ".join(lemmatizer.lemmatize(word) for word in word_tokens)
