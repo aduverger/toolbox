@@ -1,9 +1,13 @@
 # Machine learning toolbox
 
-## NLP.py
+## deep.py
+
+Diverses functions for machine learning.
+
+## nlp.py
 
 Functions to easily clean texts for NLP purpose
 
-## deepL.py
+## deep.py
 
 Diverses functions for deep learning.
