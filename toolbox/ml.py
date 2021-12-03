@@ -3,6 +3,7 @@ from sklearn.model_selection import learning_curve
 import numpy as np
 import pandas as pd
 import seaborn as sns
+import scipy.cluster.hierarchy as sch
 
 """Tools for general machine learning projects.
 """
@@ -93,24 +94,52 @@ def investigate_corr(df):
         corr_df["feature_1"] != corr_df["feature_2"]
     ]  # Remove self correlation
 
-    # Start drawing
+    # Remove duplicates
+    duplicates_indexes = []
+    for index in range(corr_df.shape[0] - 1):
+        if (
+            corr_df.iloc[index, 0] == corr_df.iloc[index + 1, 1]
+            and corr_df.iloc[index, 1] == corr_df.iloc[index + 1, 0]
+        ):
+            duplicates_indexes.append(corr_df.iloc[index, :].name)
+    corr_df.drop(index=duplicates_indexes, inplace=True)
+
+    # Draw the reordered correlation heatmap
+    plot_corr_heatmap(df)
+
+    return corr_df
+
+
+def plot_corr_heatmap(df):
+    """Plot a heatmap of a correlation matrix reordered by similarity between \
+        the variables, so that the "groups" of variables that are strongly correlated \
+        appear close in the heatmap.
+    """
+    corr = df.corr().fillna(0)
+    # Generate features and distance matrix.
+    D = corr.values
+    # Compute and plot dendrogram.
+    Y = sch.linkage(D, method="centroid")
+    Z = sch.dendrogram(Y, orientation="right", no_plot=True)
+    # Compute distance matrix.
+    index = Z["leaves"]
+    D = D[index, :]
+    D = D[:, index]
 
     # Generate a mask for the upper triangle
     mask = np.zeros_like(corr, dtype=np.bool)
     mask[np.triu_indices_from(mask)] = True
 
-    # Draw the heatmap with the mask and correct aspect ratio
-    sns.heatmap(
-        corr,
-        mask=mask,
-        square=True,
-        linewidths=0.5,
-        cbar_kws={"shrink": 0.5},
-        xticklabels=list(corr.columns[:-1]) + [""],
-        yticklabels=[""] + list(corr.columns[1:]),
-    )
+    # Set up the matplotlib figure
+    size = max(10, len(corr.columns) / 2.0)
+    plt.figure(figsize=(size, size))
 
-    return corr_df
+    # Draw the heatmap with the mask and correct aspect ratio
+    ax = sns.heatmap(
+        D, mask=mask, square=True, linewidths=0.5, cbar_kws={"shrink": 0.5}
+    )
+    ax.set_xticklabels(corr.columns[index], rotation=90, ha="center")
+    ax.set_yticklabels(corr.columns[index], rotation=0)
 
 
 def reduce_memory_usage(df):
