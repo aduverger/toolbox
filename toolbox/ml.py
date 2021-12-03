@@ -83,7 +83,7 @@ def investigate_corr(df):
     """Plot a heatmap of the collinearity between columns of a DataFrame.
     Also return a DataFrame with the sorted collinearity.
     """
-    corr = df.corr()
+    corr = df.corr().fillna(0)
     corr_df = corr.unstack().reset_index()  # Unstack correlation matrix
     corr_df.columns = ["feature_1", "feature_2", "correlation"]  # rename columns
     corr_df.sort_values(
@@ -93,7 +93,22 @@ def investigate_corr(df):
         corr_df["feature_1"] != corr_df["feature_2"]
     ]  # Remove self correlation
 
-    sns.heatmap(corr, xticklabels=corr.columns, yticklabels=corr.columns, cmap="YlGnBu")
+    # Start drawing
+
+    # Generate a mask for the upper triangle
+    mask = np.zeros_like(corr, dtype=np.bool)
+    mask[np.triu_indices_from(mask)] = True
+
+    # Draw the heatmap with the mask and correct aspect ratio
+    sns.heatmap(
+        corr,
+        mask=mask,
+        square=True,
+        linewidths=0.5,
+        cbar_kws={"shrink": 0.5},
+        xticklabels=list(corr.columns[:-1]) + [""],
+        yticklabels=[""] + list(corr.columns[1:]),
+    )
 
     return corr_df
 
