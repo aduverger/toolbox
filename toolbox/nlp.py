@@ -92,3 +92,15 @@ def lemmatize(text: str):
     word_tokens = word_tokenize(text)
     lemmatizer = WordNetLemmatizer()
     return " ".join(lemmatizer.lemmatize(word) for word in word_tokens)
+
+
+def print_lda_topics(model, vectorizer):
+    """Print topics from a fitted sklearn LDA model"""
+    for idx, topic in enumerate(model.components_):
+        print("Topic %d:" % (idx))
+        print(
+            [
+                (vectorizer.get_feature_names_out()[i], round(topic[i]))
+                for i in topic.argsort()[:-11:-1]
+            ]
+        )
