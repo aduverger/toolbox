@@ -3,6 +3,7 @@ from nltk.corpus import stopwords, wordnet
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
 from unidecode import unidecode
+from gensim.models.phrases import Phraser
 import string
 import re
 
@@ -20,6 +21,7 @@ def cleaning(
     language="english",
     additional_stopwords=[],
     accents=False,
+    bigram_mod=False,
     lemma=False,
 ):
     """Clean a text according to desired cleaning methods
@@ -51,12 +53,14 @@ def cleaning(
         cleaned_text = remove_numbers(cleaned_text)
     if stop_words:
         cleaned_text = remove_stop_words(cleaned_text, language)
+    if bigram_mod:
+        cleaned_text = join_bigram(cleaned_text, bigram_mod)
     if lemma:
         cleaned_text = lemmatize(cleaned_text)
     return cleaned_text
 
 
-def all_cleaning(text: str, language: str, additional_stopwords: list):
+def all_cleaning(text: str, language: str, additional_stopwords: list, bigram_mod):
     """Clean a text using all the function"""
     regex = r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b"
     text = re.sub(regex, "", unidecode(text.lower()))
@@ -67,6 +71,7 @@ def all_cleaning(text: str, language: str, additional_stopwords: list):
     )
     stop_words = set(stopwords.words(language) + additional_stopwords)
     text = [word for word in word_tokenize(text) if word not in stop_words]
+    text = bigram_mod[text]
     lemmatizer = WordNetLemmatizer()
     return " ".join(lemmatizer.lemmatize(word, get_wordnet_pos(word)) for word in text)
 
@@ -123,6 +128,12 @@ def lemmatize(text: str):
     return " ".join(
         lemmatizer.lemmatize(word, get_wordnet_pos(word)) for word in word_tokens
     )
+
+
+def join_bigram(text: str, bigram_mod):
+    """text: a tokenized text"""
+    word_tokens = word_tokenize(text)
+    return bigram_mod[word_tokens]
 
 
 def print_lda_topics(model, vectorizer):
