@@ -1,4 +1,5 @@
-from nltk.corpus import stopwords
+from nltk import pos_tag
+from nltk.corpus import stopwords, wordnet
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
 from unidecode import unidecode
@@ -17,6 +18,7 @@ def cleaning(
     numbers=False,
     stop_words=False,
     language="english",
+    additional_stopwords=[],
     accents=False,
     lemma=False,
 ):
@@ -43,15 +45,30 @@ def cleaning(
         cleaned_text = remove_punctuation(cleaned_text)
     if low_case:
         cleaned_text = lower_case(cleaned_text)
+    if accents:
+        cleaned_text = remove_accents(cleaned_text)
     if numbers:
         cleaned_text = remove_numbers(cleaned_text)
     if stop_words:
         cleaned_text = remove_stop_words(cleaned_text, language)
-    if accents:
-        cleaned_text = remove_accents(cleaned_text)
     if lemma:
         cleaned_text = lemmatize(cleaned_text)
     return cleaned_text
+
+
+def all_cleaning(text: str, language: str, additional_stopwords: list):
+    """Clean a text using all the function"""
+    regex = r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b"
+    text = re.sub(regex, "", unidecode(text.lower()))
+    text = "".join(
+        element
+        for element in text
+        if element not in string.punctuation and not element.isdigit()
+    )
+    stop_words = set(stopwords.words(language) + additional_stopwords)
+    text = [word for word in word_tokenize(text) if word not in stop_words]
+    lemmatizer = WordNetLemmatizer()
+    return " ".join(lemmatizer.lemmatize(word, get_wordnet_pos(word)) for word in text)
 
 
 def remove_emails(text: str):
@@ -75,9 +92,9 @@ def remove_numbers(text: str):
     return "".join(element for element in text if not element.isdigit())
 
 
-def remove_stop_words(text: str, language: str):
+def remove_stop_words(text: str, language: str, additional_stopwords: list):
     """Return text without stop words from the language"""
-    stop_words = set(stopwords.words(language))
+    stop_words = set(stopwords.words(language) + additional_stopwords)
     word_tokens = word_tokenize(text)
     return " ".join(word for word in word_tokens if word not in stop_words)
 
@@ -87,11 +104,25 @@ def remove_accents(text: str):
     return unidecode(text)
 
 
+def get_wordnet_pos(word):
+    """Map POS tag to first character lemmatize() accepts"""
+    tag = pos_tag([word])[0][1][0].upper()
+    tag_dict = {
+        "J": wordnet.ADJ,
+        "N": wordnet.NOUN,
+        "V": wordnet.VERB,
+        "R": wordnet.ADV,
+    }
+    return tag_dict.get(tag, wordnet.NOUN)
+
+
 def lemmatize(text: str):
     """Return text with only roots of the words"""
     word_tokens = word_tokenize(text)
     lemmatizer = WordNetLemmatizer()
-    return " ".join(lemmatizer.lemmatize(word) for word in word_tokens)
+    return " ".join(
+        lemmatizer.lemmatize(word, get_wordnet_pos(word)) for word in word_tokens
+    )
 
 
 def print_lda_topics(model, vectorizer):
