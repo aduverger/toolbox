@@ -133,7 +133,7 @@ def lemmatize(text: str):
 def join_bigram(text: str, bigram_mod):
     """text: a tokenized text"""
     word_tokens = word_tokenize(text)
-    return bigram_mod[word_tokens]
+    return " ".join(bigram_mod[word_tokens])
 
 
 def print_lda_topics(model, vectorizer):
