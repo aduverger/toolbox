@@ -52,7 +52,7 @@ def cleaning(
     if numbers:
         cleaned_text = remove_numbers(cleaned_text)
     if stop_words:
-        cleaned_text = remove_stop_words(cleaned_text, language)
+        cleaned_text = remove_stop_words(cleaned_text, language, additional_stopwords)
     if bigram_mod:
         cleaned_text = join_bigram(cleaned_text, bigram_mod)
     if lemma:
