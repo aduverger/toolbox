@@ -3,7 +3,6 @@ from nltk.corpus import stopwords, wordnet
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
 from unidecode import unidecode
-from gensim.models.phrases import Phraser
 import string
 import re
 
@@ -74,7 +73,7 @@ def all_cleaning(
     text: str,
     language: str,
     additional_stopwords: list,
-    bigram_mod: gensim.models.Phrases,
+    bigram_mod,
     tokenize_output: bool,
 ):
     """Clean a text using all the functions:
@@ -157,7 +156,7 @@ def lemmatize(text: str):
     return [lemmatizer.lemmatize(word, get_wordnet_pos(word)) for word in text]
 
 
-def join_bigram(text: str, bigram_mod: gensim.models.Phrases):
+def join_bigram(text: str, bigram_mod):
     """Join most common words together, e.g. ['Hong', 'Kong'] -> 'Hong_Kong'."""
     if type(text) == str:
         text = word_tokenize(text)
@@ -165,8 +164,8 @@ def join_bigram(text: str, bigram_mod: gensim.models.Phrases):
 
 
 def print_lda_topics(
-    model: sklearn.decomposition.LatentDirichletAllocation,
-    vectorizer: sklearn.feature_extraction.text.TfidfVectorizer,
+    model,
+    vectorizer,
 ):
     """Print topics from a fitted sklearn LDA model"""
     for idx, topic in enumerate(model.components_):
