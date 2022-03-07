@@ -1,7 +1,7 @@
 from nltk import pos_tag
 from nltk.corpus import stopwords, wordnet
 from nltk.tokenize import word_tokenize
-from nltk.stem import WordNetLemmatizer
+from nltk.stem import WordNetLemmatizer, PorterStemmer
 from unidecode import unidecode
 import string
 import re
@@ -15,13 +15,14 @@ def cleaning(
     emails=False,
     punctuation=False,
     low_case=False,
+    accents=False,
     numbers=False,
     stop_words=False,
     language="english",
     additional_stopwords=[],
-    accents=False,
     bigram_mod=False,
-    lemma=False,
+    lemmatize=False,
+    stemming=False,
     tokenize_output=False,
 ):
     """Clean a text according to desired cleaning methods
@@ -37,7 +38,8 @@ def cleaning(
         additional_stopwords (list, optional): Add here additional stopwords that are specific to your dataset, as a list of String.
         accents (bool, optional): Set to True if you want to remove accents. Defaults to False.
         bigram_mod (gensim.models.Phrases, optional): A Phases Class from gensim library, if you want to join most common words together, e.g. ['Hong', 'Kong'] -> 'Hong_Kong'. Defaults to False.
-        lemma (bool, optional): Set to True if you want to lemmatize (i.e. keep only the root of the words). Defaults to False.
+        lemmatize (bool, optional): Set to True if you want to lemmatize (i.e. keep only the root of the words, according to context). Defaults to False.
+        stemming (bool, optional): Set to True if you want to stem (i.e. keep only the root of the words). Defaults to False.
         tokenize_output (bool, optional): Set to True if you want the output of this function to be tokenized. Defaults to False.
 
     Returns:
@@ -58,8 +60,10 @@ def cleaning(
         cleaned_text = remove_stop_words(cleaned_text, language, additional_stopwords)
     if bigram_mod:
         cleaned_text = join_bigram(cleaned_text, bigram_mod)
-    if lemma:
+    if lemmatize:
         cleaned_text = lemmatize(cleaned_text)
+    if stemming:
+        cleaned_text = stemming(cleaned_text)
     if stop_words:
         cleaned_text = remove_stop_words(cleaned_text, language, additional_stopwords)
     if tokenize_output and type(cleaned_text) == str:
@@ -146,6 +150,13 @@ def get_wordnet_pos(word: str):
         "R": wordnet.ADV,
     }
     return tag_dict.get(tag, wordnet.NOUN)
+
+
+def stemming(text: str):
+    if type(text) == str:
+        text = word_tokenize(text)
+    ps = PorterStemmer()
+    return [ps.stem(word) for word in text]
 
 
 def lemmatize(text: str):
