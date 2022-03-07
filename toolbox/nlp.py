@@ -90,9 +90,10 @@ def all_cleaning(
         for element in text
         if element not in string.punctuation and not element.isdigit()
     )
-    text = bigram_mod[word_tokenize(text)]
+    text = word_tokenize(text)
     stop_words = set(stopwords.words(language) + additional_stopwords)
     text = [word for word in text if word not in stop_words]
+    text = bigram_mod[text]
     lemmatizer = WordNetLemmatizer()
     text = [lemmatizer.lemmatize(word, get_wordnet_pos(word)) for word in text]
     text = [word for word in text if word not in stop_words]
