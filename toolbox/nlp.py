@@ -73,39 +73,6 @@ def cleaning(
     return cleaned_text
 
 
-def all_cleaning(
-    text: str,
-    language: str,
-    additional_stopwords: list,
-    bigram_mod,
-    tokenize_output: bool,
-):
-    """Clean a text using all the functions:
-    - remove email, punctuation, number and accents
-    - lower all characters
-    - join bigrams
-    - remove stopwords
-    - lemmatize
-    """
-    regex = r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b"
-    text = re.sub(regex, "", unidecode(text.lower()))
-    text = "".join(
-        element
-        for element in text
-        if element not in string.punctuation and not element.isdigit()
-    )
-    text = bigram_mod[word_tokenize(text)]
-    stop_words = set(stopwords.words(language) + additional_stopwords)
-    text = [word for word in text if word not in stop_words]
-    lemmatizer = WordNetLemmatizer()
-    text = [lemmatizer.lemmatize(word, get_wordnet_pos(word)) for word in text]
-    text = [word for word in text if word not in stop_words]
-    if tokenize_output:
-        return text
-    else:
-        return " ".join(word for word in text)
-
-
 def remove_emails(text: str):
     """Return text without emails"""
     regex = r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b"
