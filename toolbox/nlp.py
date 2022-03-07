@@ -107,6 +107,13 @@ def remove_stop_words(text: str, language: str, additional_stopwords: list):
     return [word for word in text if word not in stop_words]
 
 
+def stemming(text: str):
+    if type(text) == str:
+        text = word_tokenize(text)
+    ps = PorterStemmer()
+    return [ps.stem(word) for word in text]
+
+
 def get_wordnet_pos(word: str):
     """Map POS tag to first character WordNetLemmatizer().lemmatize() accepts"""
     tag = pos_tag([word])[0][1][0].upper()
@@ -117,13 +124,6 @@ def get_wordnet_pos(word: str):
         "R": wordnet.ADV,
     }
     return tag_dict.get(tag, wordnet.NOUN)
-
-
-def stemming(text: str):
-    if type(text) == str:
-        text = word_tokenize(text)
-    ps = PorterStemmer()
-    return [ps.stem(word) for word in text]
 
 
 def lemmatize(text: str):
