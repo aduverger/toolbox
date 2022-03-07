@@ -21,8 +21,8 @@ def cleaning(
     language="english",
     additional_stopwords=[],
     bigram_mod=False,
-    lemmatize=False,
-    stemming=False,
+    lemma=False,
+    stem=False,
     tokenize_output=False,
 ):
     """Clean a text according to desired cleaning methods
@@ -38,8 +38,8 @@ def cleaning(
         additional_stopwords (list, optional): Add here additional stopwords that are specific to your dataset, as a list of String.
         accents (bool, optional): Set to True if you want to remove accents. Defaults to False.
         bigram_mod (gensim.models.Phrases, optional): A Phases Class from gensim library, if you want to join most common words together, e.g. ['Hong', 'Kong'] -> 'Hong_Kong'. Defaults to False.
-        lemmatize (bool, optional): Set to True if you want to lemmatize (i.e. keep only the root of the words, according to context). Defaults to False.
-        stemming (bool, optional): Set to True if you want to stem (i.e. keep only the root of the words). Defaults to False.
+        lemma (bool, optional): Set to True if you want to lemmatize (i.e. keep only the root of the words, according to context). Defaults to False.
+        stem (bool, optional): Set to True if you want to stem (i.e. keep only the root of the words). Defaults to False.
         tokenize_output (bool, optional): Set to True if you want the output of this function to be tokenized. Defaults to False.
 
     Returns:
@@ -60,9 +60,9 @@ def cleaning(
         cleaned_text = remove_stop_words(cleaned_text, language, additional_stopwords)
     if bigram_mod:
         cleaned_text = join_bigram(cleaned_text, bigram_mod)
-    if lemmatize:
+    if lemma:
         cleaned_text = lemmatize(cleaned_text)
-    if stemming:
+    if stem:
         cleaned_text = stemming(cleaned_text)
     if stop_words:
         cleaned_text = remove_stop_words(cleaned_text, language, additional_stopwords)
@@ -108,6 +108,7 @@ def remove_stop_words(text: str, language: str, additional_stopwords: list):
 
 
 def stemming(text: str):
+    """Return text with only roots of the words,"""
     if type(text) == str:
         text = word_tokenize(text)
     ps = PorterStemmer()
@@ -127,7 +128,7 @@ def get_wordnet_pos(word: str):
 
 
 def lemmatize(text: str):
-    """Return text with only roots of the words"""
+    """Return text with only roots of the words, according to context"""
     if type(text) == str:
         text = word_tokenize(text)
     lemmatizer = WordNetLemmatizer()
