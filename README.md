@@ -1,6 +1,6 @@
 # Machine learning toolbox
 
-## deep.py
+## ml.py
 
 Diverses functions for machine learning.
 
