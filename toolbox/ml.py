@@ -25,7 +25,7 @@ def plot_learning_curves(
     estimator : object type that implements the “fit” and “predict” method
         An object of that type which is cloned for each validation.
     X : array-like of shape (n_samples, n_features)
-        Training vector, where `n_samples` is the number of samples and 
+        Training vector, where `n_samples` is the number of samples and
         `n_features` is the number of features.
     y : array-like of shape (n_samples,) or (n_samples, n_outputs)
         Target relative to X for classification or regression;
@@ -73,9 +73,9 @@ def plot_for_scaling(df, feature, figsize=(7, 3)):
     fig = plt.figure(constrained_layout=True, figsize=figsize)
     gs = fig.add_gridspec(1, 4)
     ax = fig.add_subplot(gs[0, 0:3])
-    sns.histplot(data=df, x=feature, kde=True, ax=ax)
+    sns.histplot(x=df[feature].dropna(), kde=True, ax=ax)
     ax1 = fig.add_subplot(gs[0, 3:])
-    sns.boxplot(data=df, y=feature, ax=ax1)
+    sns.boxplot(y=df[feature].dropna(), ax=ax1)
     sns.despine()
     plt.show()
 
