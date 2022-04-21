@@ -17,6 +17,7 @@ def plot_learning_curves(
     train_sizes=np.array([0.1, 0.33, 0.55, 0.78, 1.0]),
     cv=None,
     scoring=None,
+    n_jobs=-1
 ):
     """Plot the learning curves for a given sklearn estimator.
 
@@ -46,9 +47,11 @@ def plot_learning_curves(
         ``scorer(estimator, X, y)``.
     figsize : tuple
         The figsize of the plot, default=(9, 4).
+    n_jobs : int
+        Number of jobs to run in parallel.
     """
     train_sizes, train_scores, test_scores = learning_curve(
-        estimator, X, y, train_sizes=train_sizes, cv=cv, scoring=scoring
+        estimator, X, y, train_sizes=train_sizes, cv=cv, scoring=scoring, n_jobs=n_jobs
     )
     train_scores_mean = np.mean(train_scores, axis=1)
     test_scores_mean = np.mean(test_scores, axis=1)
