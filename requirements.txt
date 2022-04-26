@@ -7,6 +7,7 @@ wheel>=0.29
 # data science
 numpy
 matplotlib
+seaborn
 pandas
 scikit-learn
 nltk
